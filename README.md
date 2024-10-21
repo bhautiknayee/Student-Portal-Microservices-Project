@@ -1,22 +1,35 @@
 
 # Student Portal Microservices Project
 
-This project is a microservices-based Student Portal that allows students to enroll in courses and manage their information. It is built with Spring Boot, designed to demonstrate the implementation of a microservices architecture using Java.
+This project is a microservices-based Student Portal, which allows students to enroll in courses and manage their information. It is built with Spring Boot and Docker, leveraging a microservices architecture using Spring Cloud, Kubernetes, and advanced cloud-native principles.
 
 ## Project Overview
 
-This Student Portal system consists of three core microservices:
+The Student Portal system consists of three core microservices:
 1. **Student Microservice**: Manages student data such as name, email, and student-specific information.
 2. **Course Microservice**: Manages course details like course name, description, and other relevant data.
 3. **Enrollment Microservice**: Handles the enrollment process, which associates students with courses.
+
+### Additional Features from Course:
+- **Docker & Docker Compose**: Each microservice is containerized and can be run independently in Docker containers. Docker Compose is used to run the entire system together.
+- **Kubernetes (GKE)**: The project is orchestrated and deployed on Kubernetes, with services being managed and scaled within a cluster.
+- **Spring Cloud Components**: Used for service discovery, configuration management, and routing.
+- **Helm**: Used for managing Kubernetes resources efficiently.
 
 ### Technology Stack:
 - **Java**
 - **Spring Boot**
 - **Spring Data JPA**
 - **PostgreSQL** (for database)
-- **Maven** (for dependency management)
-- **REST API** (for communication between microservices)
+- **Docker & Docker Compose** (for containerization)
+- **Kubernetes (GKE)** (for container orchestration)
+- **Spring Cloud Config** (for configuration management)
+- **Spring Eureka** (for service discovery)
+- **Spring Cloud Gateway** (for routing)
+- **Prometheus & Grafana** (for monitoring and observability)
+- **OAuth2 & Spring Security** (for security)
+- **Kafka & RabbitMQ** (for event-driven microservices)
+- **Helm** (for managing Kubernetes resources)
 
 ## Architecture
 
@@ -49,83 +62,89 @@ This project uses a **microservices architecture** where each service is self-co
      - Unenroll a student from a course.
    - **Database**: Manages the `enrollments` table.
 
-## Getting Started
+### Docker & Kubernetes Integration
 
-### Prerequisites
+Each microservice is containerized using Docker. You can build Docker images for each microservice and run them using Docker Compose for local development, or deploy them on a Kubernetes cluster (e.g., Google Kubernetes Engine).
 
-- **Java 11+**
-- **Maven 3+**
-- **PostgreSQL**
-
-### Clone the Repository
-
+#### Docker Commands:
+To build Docker images:
 ```bash
-git clone https://github.com/your-username/student-portal-microservices.git
-cd student-portal-microservices
+docker build -t student-microservice ./student-microservice
+docker build -t course-microservice ./course-microservice
+docker build -t enrollment-microservice ./enrollment-microservice
 ```
 
-### Setting Up Databases
-
-Ensure that you have PostgreSQL running, and create databases for each microservice. Update the database connection details in the `application.properties` files in each microservice.
-
-Example (for `Student` microservice):
-
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/studentdb
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-```
-
-Repeat this step for the Course and Enrollment microservices.
-
-### Running the Microservices
-
-Each microservice can be started individually using Maven:
-
+To run the microservices using Docker Compose:
 ```bash
-cd student-microservice
-mvn spring-boot:run
-
-cd ../course-microservice
-mvn spring-boot:run
-
-cd ../enrollment-microservice
-mvn spring-boot:run
+docker-compose up
 ```
 
-Once the microservices are up, they will run on different ports (configured in `application.properties`):
-- Student Microservice: `http://localhost:8081`
-- Course Microservice: `http://localhost:8082`
-- Enrollment Microservice: `http://localhost:8083`
+#### Kubernetes Commands:
+To deploy the services in Kubernetes:
+```bash
+kubectl apply -f kubernetes/student-deployment.yaml
+kubectl apply -f kubernetes/course-deployment.yaml
+kubectl apply -f kubernetes/enrollment-deployment.yaml
+```
 
-### Key API Endpoints
+### Helm Integration
+Helm charts are used to manage Kubernetes resources, simplifying deployments and configurations.
 
-#### Student Microservice
+To deploy the microservices using Helm:
+```bash
+helm install student-portal ./helm/student-portal
+```
+
+## Key API Endpoints
+
+### Student Microservice
 - `POST /students`: Add a new student.
 - `GET /students/{id}`: Retrieve student details.
 - `PUT /students/{id}`: Update student information.
 - `DELETE /students/{id}`: Remove a student.
 
-#### Course Microservice
+### Course Microservice
 - `POST /courses`: Add a new course.
 - `GET /courses/{id}`: Retrieve course details.
 - `PUT /courses/{id}`: Update course information.
 - `DELETE /courses/{id}`: Remove a course.
 
-#### Enrollment Microservice
+### Enrollment Microservice
 - `POST /enrollments`: Enroll a student in a course.
 - `GET /enrollments/student/{studentId}`: View courses a student is enrolled in.
 - `GET /enrollments/course/{courseId}`: View students enrolled in a course.
 - `DELETE /enrollments/{id}`: Unenroll a student from a course.
 
-### Testing the API
+## Monitoring and Observability
 
-You can use Postman or cURL to test the API endpoints. Here’s an example cURL command to enroll a student in a course:
+The project integrates monitoring tools like **Prometheus** and **Grafana** for system observability and metrics. Logs are collected using **Loki**, and traces are managed through **Tempo**. These tools provide insights into the performance and behavior of microservices in real-time.
 
+## Security
+
+The microservices are secured using **OAuth2** and **OpenID Connect** implemented via **Spring Security**. This ensures that only authorized users can access the APIs, and secure communication is maintained between microservices.
+
+## Event-Driven Microservices
+
+The project leverages event-driven communication using **RabbitMQ** and **Kafka**. This allows for asynchronous processing, making the system more resilient and scalable.
+
+## Deployment
+
+### Local Deployment
+You can run the microservices locally using Docker Compose:
 ```bash
-curl -X POST http://localhost:8083/enrollments -H "Content-Type: application/json" -d '{"studentId": 1, "courseId": 101}'
+docker-compose up
 ```
 
-## License
+### Kubernetes Deployment
+Deploy the services in a Kubernetes cluster:
+```bash
+kubectl apply -f kubernetes/student-deployment.yaml
+kubectl apply -f kubernetes/course-deployment.yaml
+kubectl apply -f kubernetes/enrollment-deployment.yaml
+```
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+### Helm Deployment
+To manage and deploy using Helm charts:
+```bash
+helm install student-portal ./helm/student-portal
+```
